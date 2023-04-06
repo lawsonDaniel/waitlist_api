@@ -20,10 +20,21 @@ export const AddNewMail = (req, res) => {
           createUser
             .save()
             .then((userResponse) => {
-              res.json({
-                message: "user created",
-                data: userResponse,
-              });
+              // get the count of all the users
+              User.countDocuments({})
+                .then((count) => {
+                  res.json({
+                    message: "user created",
+                    userNumber: count,
+                    data: userResponse,
+                  });
+                })
+                .catch((err) => {
+                  res.json({
+                    message: "an error occured",
+                    error: err,
+                  });
+                });
             })
             .catch((err) => {
               res.json({

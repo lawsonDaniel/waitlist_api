@@ -1,10 +1,8 @@
 import { Router } from "express";
+import { getAllUsersCount } from "../controllers/user.js";
 
 const router = Router();
 
-router.get("/", (req, res) => {
-  //get the number of users that have joined the waitlist
-  res.send("working");
-});
+router.get("/", getAllUsersCount);
 
 export default router;
