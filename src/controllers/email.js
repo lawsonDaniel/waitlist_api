@@ -1,5 +1,6 @@
 import User from "../model/users.js";
 import validator from "validator";
+import { sendUserMail } from "../utils/sendMail.js";
 
 export const AddNewMail = (req, res) => {
   //check if the mail valid
@@ -28,6 +29,8 @@ export const AddNewMail = (req, res) => {
                     userNumber: count,
                     data: userResponse,
                   });
+                  // send user mail
+                  sendUserMail(req.body.email, req.body.name, count);
                 })
                 .catch((err) => {
                   res.json({
