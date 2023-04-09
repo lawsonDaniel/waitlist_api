@@ -4,6 +4,7 @@ import userRouter from "./routes/user.js";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import { config } from "dotenv";
+import cors from 'cors'
 
 const app = express();
 // Parse application/json
@@ -11,6 +12,9 @@ app.use(bodyParser.json());
 
 //env config
 config();
+
+// Enable CORS for all routes
+app.use(cors());
 
 //manage routes
 app.use("/email", emailRouter);

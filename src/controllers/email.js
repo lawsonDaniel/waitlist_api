@@ -9,7 +9,7 @@ export const AddNewMail = (req, res) => {
     User.findOne({ email: req.body.email })
       .then((user) => {
         if (user) {
-          res.json({ message: "mail already exists" });
+          res.json({ message: "mail already exists",status:false });
         } else {
           const createUser = new User({
             name: req.body.name,
@@ -27,6 +27,7 @@ export const AddNewMail = (req, res) => {
                   res.json({
                     message: "user created",
                     userNumber: count,
+                    status:true,
                     data: userResponse,
                   });
                   // send user mail
@@ -36,6 +37,7 @@ export const AddNewMail = (req, res) => {
                   res.json({
                     message: "an error occured",
                     error: err,
+                    status: false
                   });
                 });
             })
@@ -43,6 +45,7 @@ export const AddNewMail = (req, res) => {
               res.json({
                 message: "error creating user",
                 data: err,
+                status: false
               });
             });
         }
@@ -51,11 +54,13 @@ export const AddNewMail = (req, res) => {
         res.json({
           message: "an error occured",
           error: err,
+          status: false
         });
       });
   } else {
     res.json({
       message: "invalid email address",
+      status: false
     });
   }
 };
