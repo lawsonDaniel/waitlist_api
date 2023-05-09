@@ -24,7 +24,7 @@ main().catch((err) => console.log(err));
 
 async function main() {
   await mongoose.connect(
-    process.env.DATABASE_URL || "mongodb://localhost:27017/waitlist"
+    process.env.DB_CONNECTION || "mongodb://localhost:27017/waitlist"
   );
 }
 

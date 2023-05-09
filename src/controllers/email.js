@@ -1,65 +1,58 @@
 import User from "../model/users.js";
 import validator from "validator";
 import { sendUserMail } from "../utils/sendMail.js";
+import { v4 } from 'uuid';
 
-export const AddNewMail = (req, res) => {
-  //check if the mail valid
-  if (validator.isEmail(req.body.email)) {
-    // check if the mail exists
-    User.findOne({ email: req.body.email })
-      .then((user) => {
-        if (user) {
-          res.json({ message: "mail already exists",status:false });
-        } else {
-          const createUser = new User({
-            name: req.body.name,
-            email: req.body.email,
-            phone: req.body.phone,
-            sex: req.body.sex,
-          });
-          // save user
-          createUser
-            .save()
-            .then((userResponse) => {
-              // get the count of all the users
-              User.countDocuments({})
-                .then((count) => {
-                  res.json({
-                    message: "user created",
-                    userNumber: count,
-                    status:true,
-                    data: userResponse,
-                  });
-                  // send user mail
-                  sendUserMail(req.body.email, req.body.name, count);
-                })
-                .catch((err) => {
-                  res.json({
-                    message: "an error occured",
-                    error: err,
-                    status: false
-                  });
-                });
-            })
-            .catch((err) => {
-              res.json({
-                message: "error creating user",
-                data: err,
-                status: false
-              });
-            });
-        }
-      })
-      .catch((err) => {
-        res.json({
-          message: "an error occured",
-          error: err,
-          status: false
-        });
+export const AddNewMail = async (req, res) => {
+  try {
+    const { name, email, phone, sex } = req.body;
+
+    // Check if the email is valid
+    if (!validator.isEmail(email)) {
+      return res.json({
+        message: "Invalid email address",
+        status: false
       });
-  } else {
+    }
+
+    // Check if the email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.json({
+        message: "Email already exists",
+        status: false
+      });
+    }
+
+    // Create a new user
+    const privateCode = v4();
+    const createUser = new User({
+      name,
+      email,
+      phone,
+      sex,
+      code: privateCode
+    });
+
+    // Save the user
+    const userResponse = await createUser.save();
+
+    // Get the count of all users
+    const count = await User.countDocuments({});
+
     res.json({
-      message: "invalid email address",
+      message: "User created",
+      userNumber: privateCode,
+      status: true,
+      data: userResponse
+    });
+
+    // Send user mail
+    sendUserMail(email, name, privateCode);
+  } catch (err) {
+    res.json({
+      message: "An error occurred",
+      error: err,
       status: false
     });
   }
